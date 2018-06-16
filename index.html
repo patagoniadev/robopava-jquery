@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RoboPava</title>
+  <link rel="stylesheet" href="style/bootstrap.min.css" />
+  <link rel="stylesheet" href="style/bootstrap-theme.min.css" />
+  <link rel="stylesheet" href="style/jquery-ui.min.css" />
+
+  <link rel="stylesheet" href="style/custom.css" />
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script type="text/javascript" src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script type="text/javascript" src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+  <div class="container tc">
+    <h1>RoboPava</h1>
+    <div class="row">
+      <div class="col-md-6">
+        <form>
+          <div class="wrapper">
+            <button type="button" class="btn btn-primary btn-lg wdefault mleft" value="70" id="tempte">Te</button>
+            <button type="button" class="btn btn-primary btn-lg wdefault mleft" value="80" id="tempmate">Mate</button>
+            <button type="button" class="btn btn-primary btn-lg wdefault mleft" value="90" id="tempcafe">Cafe</button>
+          </div>
+          <div class="customTempDiv">
+            <input type="input " class="form-control" id="temp" placeholder="Temperatura">
+          </div>
+          <div style="margin: auto; width: 150px;">
+            <button style="width: 100px;" type="button" class="btn btn-primary btn-lg wdefault">Submit</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <div class="wrapper">
+          <textarea class="form-control rounded-0" id="logEvent" rows="10" readonly></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- /.container -->
+
+  <script type="text/javascript " src="js/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript " src="js/jquery-ui.min.js "></script>
+  <script type="text/javascript " src="js/bootstrap.min.js "></script>
+  <script type="text/javascript " src="js/underscore-min.js "></script>
+
+</body>
+
+</html>
+
+<script type="text/javascript ">
+  function returnAlert(result) {
+    alert(result);
+  };
+  let date = new Date();
+  //set local reference to server
+  let urlPost = 'http://10.15.4.82/v1/pavas/calentar';
+  let urlGet = 'http://10.15.4.82/v1/pavas/temperatura';
+
+  $(":button ").click(function(e) {
+    //set temperature
+    let temp = e.toElement.value != "" ? e.toElement.value : $("#temp").val();
+    $.when(
+      $.post(urlPost, {
+        "temperatura": temp
+      }),
+    ).done(function(result) {
+      //take response and log into textarea
+      $("#logEvent").append("\n" + date.toISOString() + " : " + result);
+      setInterval(function() {
+        $.get(urlGet).done(function(result) {
+          $("#logEvent").append("\n" + date.toISOString() + " : " + result);
+        })
+      }, 1000);
+    }).fail(function(result) {
+      //take response and log into textarea
+      $("#logEvent").append("\n" + date.toISOString() + " : " + result.statusText);
+    });
+  });
+</script>
