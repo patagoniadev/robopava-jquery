@@ -62,32 +62,35 @@
 </html>
 
 <script type="text/javascript ">
-  function returnAlert(result) {
-    alert(result);
-  };
-  let date = new Date();
   //set local reference to server
   const urlPost = 'http://x.x.x.x/v1/pavas/calentar';
   const urlGet = 'http://x.x.x.x/v1/pavas/temperatura';
 
+  function takeCurrentDateTime() {
+    let date = new Date();
+    return date.toISOString();
+  }
+
   $(":button ").click(function(e) {
-    //set temperature
+    //set temperature from input or buttons
     let temp = e.toElement.value != "" ? e.toElement.value : $("#temp").val();
+    //Post query
     $.when(
       $.post(urlPost, {
         "temperatura": temp
       }),
     ).done(function(result) {
       //take response and log into textarea
-      $("#logEvent").append("\n" + date.toISOString() + " : " + result);
+      $("#logEvent").append("\n" + takeCurrentDateTime + " : " + result);
+      //Set 1 second interval to take actual state of robopava
       setInterval(function() {
         $.get(urlGet).done(function(result) {
-          $("#logEvent").append("\n" + date.toISOString() + " : " + result);
+          $("#logEvent").append("\n" + takeCurrentDateTime + " : " + result);
         })
       }, 1000);
     }).fail(function(result) {
       //take response and log into textarea
-      $("#logEvent").append("\n" + date.toISOString() + " : " + result.statusText);
+      $("#logEvent").append("\n" + takeCurrentDateTime + " : " + result.statusText);
     });
   });
 </script>
